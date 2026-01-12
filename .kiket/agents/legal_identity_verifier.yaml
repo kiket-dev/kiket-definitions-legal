@@ -1,0 +1,74 @@
+model_version: "1.0"
+id: ai.legal.identity_verifier
+version: 1.0.0
+name: Identity Verification Assistant
+description: Assist with GDPR identity verification.
+
+prompt: |
+  Assess identity verification requirements for this GDPR request.
+
+  **Request:**
+  - Requester Email: {{issue.custom_fields.email}}
+  - Name Provided: {{issue.custom_fields.name}}
+  - Request Type: {{issue.custom_fields.request_type}}
+
+  **Account Information (if found):**
+  {{#if context.account}}
+  - Account Email: {{context.account.email}}
+  - Account Name: {{context.account.name}}
+  - Account Created: {{context.account.created_at}}
+  - Last Login: {{context.account.last_login}}
+  {{else}}
+  No matching account found.
+  {{/if}}
+
+  **Verification Guidelines:**
+  {{context.verification_policy}}
+
+  Assess verification needs:
+  - identity_confidence: low/medium/high
+  - email_match: true/false
+  - name_match: true/false/partial
+  - verification_steps: Required verification actions
+  - risk_level: low/medium/high
+  - recommendation: proceed/verify_email/request_id/reject
+  - notes: Guidance for the verification team
+
+capabilities:
+  - identity_assessment
+  - risk_analysis
+
+context:
+  required:
+    - users
+    - documents
+
+human_in_loop:
+  required: false
+
+metadata:
+  output_format: json
+  max_tokens: 600
+  schema:
+    type: object
+    properties:
+      identity_confidence:
+        type: string
+        enum: [low, medium, high]
+      email_match:
+        type: boolean
+      name_match:
+        type: string
+        enum: ["true", "false", "partial"]
+      verification_steps:
+        type: array
+        items:
+          type: string
+      risk_level:
+        type: string
+        enum: [low, medium, high]
+      recommendation:
+        type: string
+        enum: [proceed, verify_email, request_id, reject]
+      notes:
+        type: string

@@ -1,0 +1,91 @@
+model_version: "1.0"
+automations:
+  - id: gdpr-classification
+    name: GDPR Request Classification
+    description: Auto-classify and assess GDPR requests.
+    version: 1.0.0
+    enabled: true
+
+    trigger:
+      event: issue.created
+      conditions:
+        - field: issue_type
+          equals: gdpr_request
+
+    actions:
+      - type: ai_action
+        agent: ai.legal.gdpr_classifier
+        store_result_in: custom_fields.classification
+      - type: ai_action
+        agent: ai.legal.identity_verifier
+        store_result_in: custom_fields.identity_confidence
+      - type: notify
+        recipients:
+          roles: [legal]
+        message: "🔐 New GDPR request: {{issue.custom_fields.request_type}} from {{issue.custom_fields.email}}"
+
+  - id: gdpr-sla-warning
+    name: GDPR SLA Warning
+    description: Alert when GDPR request approaches 30-day deadline.
+    version: 1.0.0
+    enabled: true
+
+    trigger:
+      event: sla.warning
+      conditions:
+        - field: issue_type
+          equals: gdpr_request
+
+    actions:
+      - type: notify
+        recipients:
+          user: assignee
+          roles: [legal, compliance]
+        message: "⚠️ GDPR deadline approaching: Request #{{issue.id}} ({{sla.time_remaining}} remaining)"
+        level: warning
+
+  - id: gdpr-sla-breach
+    name: GDPR SLA Breach Critical Alert
+    description: Critical alert when GDPR request breaches 30-day deadline.
+    version: 1.0.0
+    enabled: true
+
+    trigger:
+      event: sla.breached
+      conditions:
+        - field: issue_type
+          equals: gdpr_request
+
+    actions:
+      - type: notify
+        recipients:
+          roles: [legal, compliance, executive]
+        message: "🚨 GDPR DEADLINE BREACHED: Request #{{issue.id}} - Regulatory risk!"
+        level: critical
+      - type: add_label
+        label: compliance-risk
+
+  - id: gdpr-completion-audit
+    name: GDPR Completion Audit Trail
+    description: Create audit record when GDPR request is completed.
+    version: 1.0.0
+    enabled: true
+
+    trigger:
+      event: issue.transitioned
+      conditions:
+        - field: issue_type
+          equals: gdpr_request
+        - field: to_status
+          equals: completed
+
+    actions:
+      - type: blockchain_anchor
+        priority: high
+        metadata:
+          type: gdpr_compliance
+          request_id: "{{issue.id}}"
+          request_type: "{{issue.custom_fields.request_type}}"
+          completed_at: "{{now}}"
+      - type: comment
+        body: "✅ GDPR request completed and anchored to blockchain for compliance audit trail."

@@ -1,0 +1,56 @@
+model_version: "1.0"
+id: ai.legal.contract_analyzer
+version: 1.0.0
+name: Contract Analyzer
+description: Analyze contracts for key terms and risks.
+
+prompt: |
+  Analyze this contract draft for key terms and potential risks.
+
+  **Contract:**
+  - Title: {{issue.title}}
+  - Type: {{issue.custom_fields.contract_type}}
+  - Counterparty: {{issue.custom_fields.counterparty}}
+  - Value: ${{issue.custom_fields.contract_value}}
+  - Term: {{issue.custom_fields.term_months}} months
+  - Content: {{issue.description}}
+
+  **Standard Terms (for comparison):**
+  {{context.standard_terms}}
+
+  Provide analysis:
+  1. **Contract Summary**: Key terms in plain language
+  2. **Financial Terms**:
+     - Payment terms and schedule
+     - Pricing and adjustments
+     - Penalties or late fees
+  3. **Key Obligations**:
+     - Our obligations
+     - Counterparty obligations
+  4. **Risk Assessment**:
+     - High-risk clauses
+     - Unusual terms
+     - Missing standard protections
+  5. **Compliance Check**:
+     - Data protection implications
+     - Regulatory considerations
+  6. **Recommendations**:
+     - Suggested modifications
+     - Points for negotiation
+  7. **Red Flags**: Issues requiring immediate legal attention
+
+capabilities:
+  - contract_analysis
+  - risk_assessment
+
+context:
+  required:
+    - documents
+
+human_in_loop:
+  required: true
+  reason: Contract analysis is advisory and requires legal review
+
+metadata:
+  output_format: markdown
+  max_tokens: 2000

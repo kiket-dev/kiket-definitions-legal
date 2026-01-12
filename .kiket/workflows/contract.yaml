@@ -1,0 +1,186 @@
+model_version: "1.0"
+workflow:
+  id: contract
+  name: Contract Lifecycle
+  version: 1.0.0
+  description: Contract creation, review, and approval workflow.
+
+states:
+  draft:
+    type: initial
+    category: pending
+    metadata:
+      label: Draft
+      color: secondary
+      icon: "📝"
+      description: Contract being drafted.
+    on_enter:
+      - action: ai_analyze
+        agent: ai.legal.contract_analyzer
+        store_result_in: comment
+
+  internal_review:
+    type: active
+    category: review
+    metadata:
+      label: Internal Review
+      color: info
+      icon: "🔍"
+      description: Under internal review.
+    checklist:
+      id: internal_review_checklist
+      title: Internal Review
+      required_mode: all
+      items:
+        - id: terms_reviewed
+          label: Terms and conditions reviewed
+          check_type: manual
+          required: true
+        - id: pricing_verified
+          label: Pricing verified
+          check_type: manual
+          required: true
+        - id: compliance_check
+          label: Compliance requirements met
+          check_type: manual
+          required: true
+        - id: risk_assessment
+          label: Risk assessment completed
+          check_type: manual
+
+  legal_review:
+    type: active
+    category: review
+    metadata:
+      label: Legal Review
+      color: warning
+      icon: "⚖️"
+      description: Under legal team review.
+    approval:
+      required: 1
+      approvers:
+        - role: legal
+    sla:
+      warning: 48h
+      breach: 120h
+      business_hours: true
+
+  pending_signature:
+    type: active
+    category: active
+    metadata:
+      label: Pending Signature
+      color: primary
+      icon: "✍️"
+      description: Awaiting signatures.
+    on_enter:
+      - action: notify
+        recipients:
+          user: assignee
+        message: "📋 Contract ready for signature: {{issue.title}}"
+
+  countersigned:
+    type: active
+    category: active
+    metadata:
+      label: Countersigned
+      color: info
+      icon: "📄"
+      description: Awaiting counterparty signature.
+    sla:
+      warning: 168h  # 7 days
+      breach: 336h   # 14 days
+
+  active:
+    type: active
+    category: completed
+    metadata:
+      label: Active
+      color: success
+      icon: "✅"
+      description: Contract active.
+    on_enter:
+      - action: notify
+        recipients:
+          roles: [legal, sales]
+        message: "✅ Contract executed: {{issue.title}}"
+        level: success
+      - action: blockchain_anchor
+        priority: normal
+        metadata:
+          type: contract_execution
+          contract_id: "{{issue.custom_fields.contract_id}}"
+
+  expired:
+    type: final
+    category: completed
+    metadata:
+      label: Expired
+      color: secondary
+      icon: "⏰"
+      description: Contract expired.
+
+  terminated:
+    type: final
+    category: completed
+    metadata:
+      label: Terminated
+      color: danger
+      icon: "🚫"
+      description: Contract terminated.
+    on_enter:
+      - action: blockchain_anchor
+        priority: high
+        metadata:
+          type: contract_termination
+          contract_id: "{{issue.custom_fields.contract_id}}"
+
+  cancelled:
+    type: final
+    category: completed
+    metadata:
+      label: Cancelled
+      color: secondary
+      icon: "❌"
+      description: Contract cancelled before execution.
+
+transitions:
+  - from: draft
+    to: internal_review
+    name: Submit for Review
+  - from: draft
+    to: cancelled
+    name: Cancel
+  - from: internal_review
+    to: legal_review
+    name: Send to Legal
+  - from: internal_review
+    to: draft
+    name: Return to Draft
+  - from: legal_review
+    to: pending_signature
+    name: Approve for Signature
+  - from: legal_review
+    to: internal_review
+    name: Request Changes
+  - from: legal_review
+    to: cancelled
+    name: Reject
+  - from: pending_signature
+    to: countersigned
+    name: Sign Internally
+  - from: pending_signature
+    to: cancelled
+    name: Cancel
+  - from: countersigned
+    to: active
+    name: Fully Executed
+  - from: countersigned
+    to: cancelled
+    name: Cancel
+  - from: active
+    to: expired
+    name: Mark Expired
+  - from: active
+    to: terminated
+    name: Terminate

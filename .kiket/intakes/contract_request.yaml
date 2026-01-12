@@ -1,0 +1,136 @@
+model_version: "1.0"
+intake:
+  id: contract-request
+  name: Contract Request
+  description: Request a new contract or contract amendment.
+  version: 1.0.0
+
+  public: false
+  slug: legal/contract
+
+  branding:
+    title: "Contract Request"
+    subtitle: "Request a new contract or modification to an existing contract."
+
+  issue:
+    type: contract
+    workflow: contract
+    initial_state: draft
+    title_template: "[Contract] {{contract_type}} - {{counterparty}}"
+
+  fields:
+    - key: contract_type
+      type: enum
+      label: Contract Type
+      required: true
+      options:
+        - value: customer
+          label: "Customer Agreement"
+        - value: vendor
+          label: "Vendor / Supplier Agreement"
+        - value: partner
+          label: "Partnership Agreement"
+        - value: nda
+          label: "Non-Disclosure Agreement (NDA)"
+        - value: employment
+          label: "Employment Agreement"
+        - value: contractor
+          label: "Contractor Agreement"
+        - value: amendment
+          label: "Contract Amendment"
+        - value: other
+          label: "Other"
+      map_to: custom_fields.contract_type
+
+    - key: counterparty
+      type: string
+      label: Counterparty Name
+      placeholder: "Company or individual name"
+      required: true
+      map_to: custom_fields.counterparty
+
+    - key: counterparty_contact
+      type: string
+      label: Counterparty Contact
+      placeholder: "Contact person at the counterparty"
+      required: false
+      map_to: custom_fields.counterparty_contact
+
+    - key: counterparty_email
+      type: email
+      label: Counterparty Email
+      placeholder: "contact@counterparty.com"
+      required: false
+      map_to: custom_fields.counterparty_email
+
+    - key: contract_value
+      type: number
+      label: Contract Value ($)
+      placeholder: "Total contract value"
+      required: true
+      min: 0
+      map_to: custom_fields.contract_value
+
+    - key: term_months
+      type: number
+      label: Contract Term (months)
+      placeholder: "12"
+      required: true
+      min: 1
+      map_to: custom_fields.term_months
+
+    - key: start_date
+      type: date
+      label: Desired Start Date
+      required: true
+      map_to: custom_fields.start_date
+
+    - key: urgency
+      type: enum
+      label: Urgency
+      required: true
+      options:
+        - value: standard
+          label: "Standard (5-10 business days)"
+        - value: urgent
+          label: "Urgent (2-3 business days)"
+        - value: critical
+          label: "Critical (24-48 hours)"
+      map_to: custom_fields.urgency
+
+    - key: description
+      type: markdown
+      label: Contract Details
+      placeholder: |
+        Please provide:
+        - Key terms and conditions
+        - Specific requirements or provisions
+        - Any non-standard terms needed
+        - Reference to previous contracts if applicable
+      required: true
+      map_to: description
+
+    - key: attachments
+      type: file
+      label: Supporting Documents
+      required: false
+      multiple: true
+      max_size: 25MB
+      help_text: "Attach any relevant documents, previous contracts, or templates"
+
+  confirmation:
+    title: "Contract Request Submitted"
+    message: |
+      Your contract request has been submitted to the legal team.
+
+      **Request ID:** #{{issue.id}}
+      **Contract Type:** {{contract_type}}
+      **Counterparty:** {{counterparty}}
+
+      The legal team will review your request and begin drafting.
+
+  notifications:
+    on_submit:
+      - type: slack
+        channel: "#legal-contracts"
+        message: "📋 New contract request: {{contract_type}} with {{counterparty}} (${{contract_value}})"

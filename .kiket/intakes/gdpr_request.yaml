@@ -1,0 +1,104 @@
+model_version: "1.0"
+intake:
+  id: gdpr-request
+  name: Data Subject Request
+  description: Submit a GDPR data subject request.
+  version: 1.0.0
+
+  public: true
+  slug: privacy/request
+
+  branding:
+    title: "Data Subject Request"
+    subtitle: "Exercise your data protection rights under GDPR."
+
+  issue:
+    type: gdpr_request
+    workflow: gdpr
+    initial_state: received
+    title_template: "[GDPR] {{request_type}} - {{email}}"
+
+  fields:
+    - key: request_type
+      type: enum
+      label: Request Type
+      required: true
+      options:
+        - value: access
+          label: "Access my data (Right of Access)"
+        - value: rectification
+          label: "Correct my data (Right to Rectification)"
+        - value: erasure
+          label: "Delete my data (Right to Erasure)"
+        - value: restriction
+          label: "Restrict processing of my data"
+        - value: portability
+          label: "Export my data (Data Portability)"
+        - value: objection
+          label: "Object to processing of my data"
+      map_to: custom_fields.request_type
+
+    - key: name
+      type: string
+      label: Full Name
+      placeholder: "Your full legal name"
+      required: true
+      map_to: custom_fields.name
+
+    - key: email
+      type: email
+      label: Email Address
+      placeholder: "email@example.com"
+      required: true
+      help_text: "Use the email address associated with your account"
+      map_to: custom_fields.email
+
+    - key: description
+      type: markdown
+      label: Request Details
+      placeholder: |
+        Please provide details about your request:
+        - For access requests: What specific data are you looking for?
+        - For rectification: What data needs to be corrected?
+        - For erasure: What data do you want deleted?
+        - For portability: What format do you prefer?
+      required: true
+      map_to: description
+
+    - key: account_info
+      type: text
+      label: Additional Account Information (optional)
+      placeholder: "Username, account ID, or other identifying information"
+      required: false
+      map_to: custom_fields.account_info
+
+    - key: verification_document
+      type: file
+      label: Identity Verification (optional)
+      required: false
+      max_size: 10MB
+      accept: ".pdf,.png,.jpg,.jpeg"
+      help_text: "For certain requests, we may require identity verification"
+
+  confirmation:
+    title: "Request Received"
+    message: |
+      Your data subject request has been received.
+
+      **Reference Number:** #{{issue.id}}
+      **Request Type:** {{request_type}}
+
+      We will process your request in accordance with GDPR requirements (within 30 days).
+      You will receive updates at the email address you provided.
+
+      If we need additional information to verify your identity or clarify your request, we will contact you.
+
+  notifications:
+    on_submit:
+      - type: email
+        to: "{{email}}"
+        subject: "Data Subject Request Received - Reference #{{issue.id}}"
+        template: gdpr_request_confirmation
+      - type: slack
+        channel: "#legal-privacy"
+        message: "🔐 New GDPR request: {{request_type}} from {{email}}"

@@ -1,0 +1,164 @@
+model_version: "1.0"
+workflow:
+  id: gdpr
+  name: GDPR Request
+  version: 1.0.0
+  description: GDPR data subject request handling workflow.
+
+states:
+  received:
+    type: initial
+    category: pending
+    metadata:
+      label: Received
+      color: secondary
+      icon: "📬"
+      description: Request received.
+    on_enter:
+      - action: ai_analyze
+        agent: ai.legal.gdpr_classifier
+        store_result_in: custom_fields.request_type
+      - action: ai_analyze
+        agent: ai.legal.identity_verifier
+        store_result_in: custom_fields.identity_confidence
+    sla:
+      warning: 24h
+      breach: 72h
+      business_hours: true
+
+  verifying_identity:
+    type: active
+    category: active
+    metadata:
+      label: Verifying Identity
+      color: info
+      icon: "🔐"
+      description: Verifying requester identity.
+    checklist:
+      id: identity_verification
+      title: Identity Verification
+      required_mode: all
+      items:
+        - id: email_verified
+          label: Email address verified
+          check_type: manual
+          required: true
+        - id: id_document
+          label: ID document checked (if required)
+          check_type: manual
+        - id: account_match
+          label: Account ownership confirmed
+          check_type: manual
+          required: true
+    sla:
+      warning: 48h
+      breach: 120h
+      business_hours: true
+
+  processing:
+    type: active
+    category: active
+    metadata:
+      label: Processing
+      color: primary
+      icon: "⚙️"
+      description: Request being processed.
+    checklist:
+      id: gdpr_processing
+      title: Processing Checklist
+      required_mode: all
+      items:
+        - id: data_located
+          label: All data sources identified
+          check_type: manual
+          required: true
+        - id: data_compiled
+          label: Data compiled/action taken
+          check_type: manual
+          required: true
+        - id: third_parties
+          label: Third parties notified (if applicable)
+          check_type: manual
+        - id: documentation
+          label: Actions documented
+          check_type: manual
+          required: true
+    sla:
+      warning: 336h  # 14 days
+      breach: 720h   # 30 days (GDPR requirement)
+      business_hours: false
+
+  legal_review:
+    type: active
+    category: review
+    metadata:
+      label: Legal Review
+      color: warning
+      icon: "⚖️"
+      description: Under legal review.
+    approval:
+      required: 1
+      approvers:
+        - role: legal
+
+  completed:
+    type: final
+    category: completed
+    metadata:
+      label: Completed
+      color: success
+      icon: "✅"
+      description: Request fulfilled.
+    on_enter:
+      - action: notify
+        recipients:
+          user: submitter
+        message: "Your GDPR request has been completed. Reference: #{{issue.id}}"
+      - action: blockchain_anchor
+        priority: high
+        metadata:
+          type: gdpr_compliance
+          request_type: "{{issue.custom_fields.request_type}}"
+
+  rejected:
+    type: final
+    category: completed
+    metadata:
+      label: Rejected
+      color: danger
+      icon: "❌"
+      description: Request rejected (invalid or out of scope).
+    on_enter:
+      - action: notify
+        recipients:
+          user: submitter
+        message: "Your request could not be processed. Reason: {{issue.custom_fields.rejection_reason}}"
+
+transitions:
+  - from: received
+    to: verifying_identity
+    name: Verify Identity
+  - from: received
+    to: rejected
+    name: Reject Request
+  - from: verifying_identity
+    to: processing
+    name: Identity Verified
+  - from: verifying_identity
+    to: rejected
+    name: Identity Not Verified
+  - from: processing
+    to: legal_review
+    name: Request Legal Review
+  - from: processing
+    to: completed
+    name: Complete Request
+  - from: legal_review
+    to: processing
+    name: Return to Processing
+  - from: legal_review
+    to: completed
+    name: Approve & Complete
+  - from: legal_review
+    to: rejected
+    name: Reject
