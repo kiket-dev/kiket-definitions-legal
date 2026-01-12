@@ -1,0 +1,226 @@
+model_version: "1.0"
+dashboard:
+  id: legal-health
+  name: Legal Health
+  description: Track contract turnaround, GDPR compliance, and legal operations.
+  widgets:
+    - id: pending-contracts-kpi
+      type: kpi
+      title: Pending Contracts
+      query: fct_contract_status
+      query_config:
+        model: fct_contract_status
+        parameters:
+          - name: project_id
+            type: integer
+            required: true
+        filters:
+          project_id: ":project_id"
+          status: pending_review
+      options:
+        comparison:
+          interval: "7d"
+
+    - id: contract-turnaround-trend
+      type: timeseries
+      title: Contract Turnaround Time (Days)
+      query: fct_contract_cycle
+      query_config:
+        model: fct_contract_cycle
+        parameters:
+          - name: project_id
+            type: integer
+            required: true
+        filters:
+          project_id: ":project_id"
+        order_by:
+          - completed_week
+      visualization:
+        x: completed_week
+        y: avg_turnaround_days
+        series: contract_type
+
+    - id: contracts-by-type
+      type: leaderboard
+      title: Contracts by Type
+      query: fct_contract_volume
+      query_config:
+        model: fct_contract_volume
+        parameters:
+          - name: project_id
+            type: integer
+            required: true
+        filters:
+          project_id: ":project_id"
+      visualization:
+        group_by: contract_type
+        value: contract_count
+
+    - id: gdpr-sla-compliance-kpi
+      type: kpi
+      title: GDPR SLA Compliance
+      query: fct_gdpr_compliance
+      query_config:
+        model: fct_gdpr_compliance
+        parameters:
+          - name: project_id
+            type: integer
+            required: true
+        filters:
+          project_id: ":project_id"
+      options:
+        format: percentage
+        comparison:
+          interval: "30d"
+
+    - id: gdpr-requests-trend
+      type: timeseries
+      title: GDPR Requests by Week
+      query: fct_gdpr_volume
+      query_config:
+        model: fct_gdpr_volume
+        parameters:
+          - name: project_id
+            type: integer
+            required: true
+        filters:
+          project_id: ":project_id"
+        order_by:
+          - request_week
+      visualization:
+        x: request_week
+        y: request_count
+        series: request_type
+
+    - id: gdpr-by-type
+      type: leaderboard
+      title: GDPR Requests by Type
+      query: fct_gdpr_volume
+      query_config:
+        model: fct_gdpr_volume
+        parameters:
+          - name: project_id
+            type: integer
+            required: true
+        filters:
+          project_id: ":project_id"
+      visualization:
+        group_by: request_type
+        value: request_count
+
+    - id: contract-renewal-pipeline
+      type: table
+      title: Upcoming Contract Renewals (90 Days)
+      query: fct_contract_renewals
+      query_config:
+        model: fct_contract_renewals
+        parameters:
+          - name: project_id
+            type: integer
+            required: true
+        filters:
+          project_id: ":project_id"
+          days_until_renewal_lt: 90
+        select:
+          - contract_name
+          - counterparty
+          - contract_type
+          - renewal_date
+          - days_until_renewal
+          - annual_value
+        order_by:
+          - renewal_date
+        limit: 20
+
+    - id: risk-exposure
+      type: table
+      title: High-Risk Contracts
+      query: fct_contract_risk
+      query_config:
+        model: fct_contract_risk
+        parameters:
+          - name: project_id
+            type: integer
+            required: true
+        filters:
+          project_id: ":project_id"
+          risk_level: high
+        select:
+          - contract_name
+          - counterparty
+          - risk_category
+          - risk_score
+          - mitigation_status
+        order_by:
+          - risk_score DESC
+        limit: 15
+
+    - id: gdpr-aging
+      type: table
+      title: GDPR Requests Approaching Deadline
+      query: fct_gdpr_pending
+      query_config:
+        model: fct_gdpr_pending
+        parameters:
+          - name: project_id
+            type: integer
+            required: true
+        filters:
+          project_id: ":project_id"
+          status: in_progress
+        select:
+          - request_id
+          - request_type
+          - requester_email
+          - days_remaining
+          - assigned_to
+        order_by:
+          - days_remaining
+        limit: 15
+
+  alerts:
+    - query: fct_gdpr_pending
+      query_config:
+        model: fct_gdpr_pending
+        parameters:
+          - name: project_id
+            type: integer
+            required: true
+        filters:
+          project_id: ":project_id"
+          status: in_progress
+      condition: days_remaining < 5
+      notify_roles:
+        - manager
+      message: "GDPR request approaching deadline (< 5 days remaining)"
+
+    - query: fct_contract_renewals
+      query_config:
+        model: fct_contract_renewals
+        parameters:
+          - name: project_id
+            type: integer
+            required: true
+        filters:
+          project_id: ":project_id"
+      condition: days_until_renewal < 30 AND renewal_status = 'not_started'
+      notify_roles:
+        - manager
+      message: "Contract renewal within 30 days with no action taken"
+
+    - query: fct_contract_cycle
+      query_config:
+        model: fct_contract_cycle
+        parameters:
+          - name: project_id
+            type: integer
+            required: true
+        filters:
+          project_id: ":project_id"
+        order_by:
+          - completed_week DESC
+        limit: 1
+      condition: avg_turnaround_days > 14
+      notify_roles:
+        - manager
+      message: "Contract turnaround time exceeds 14 days"
