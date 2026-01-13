@@ -2,82 +2,86 @@ model_version: "1.0"
 board:
   id: legal-board
   name: Legal Requests
+  type: kanban
   description: GDPR requests and contract management.
-  version: 1.0.0
+  workflow: gdpr
 
-  filters:
-    issue_types:
-      - gdpr_request
-      - contract
-    workflows:
-      - gdpr
-      - contract
+filters:
+  issue_types:
+    - gdpr_request
+    - contract
+  workflows:
+    - gdpr
+    - contract
 
-  columns:
-    - id: new
-      name: New
-      states:
-        - received
-        - draft
-      wip_limit: null
-      color: secondary
+columns:
+  - key: new
+    name: New
+    states:
+      - received
+      - draft
+    color: secondary
 
-    - id: processing
-      name: Processing
-      states:
-        - verifying_identity
-        - processing
-        - internal_review
-      wip_limit: 15
-      color: info
+  - key: processing
+    name: Processing
+    states:
+      - verifying_identity
+      - processing
+      - internal_review
+    wip_limit: 15
+    color: info
 
-    - id: legal_review
-      name: Legal Review
-      states:
-        - legal_review
-      wip_limit: 10
-      color: warning
+  - key: legal_review
+    name: Legal Review
+    states:
+      - legal_review
+    wip_limit: 10
+    color: warning
 
-    - id: pending
-      name: Pending Action
-      states:
-        - pending_signature
-        - countersigned
-      wip_limit: null
-      color: primary
+  - key: pending
+    name: Pending Action
+    states:
+      - pending_signature
+      - countersigned
+    color: primary
 
-    - id: completed
-      name: Completed
-      states:
-        - completed
-        - active
-      wip_limit: null
-      color: success
+  - key: completed
+    name: Completed
+    states:
+      - completed
+      - active
+    color: success
 
-  swimlanes:
-    enabled: true
-    field: issue_type
-    values:
-      - value: gdpr_request
-        label: "🔐 GDPR Requests"
-      - value: contract
-        label: "📋 Contracts"
+swimlanes:
+  enabled: true
+  field: issue_type
+  values:
+    - value: gdpr_request
+      label: "🔐 GDPR Requests"
+    - value: contract
+      label: "📋 Contracts"
 
-  card_fields:
-    - title
-    - issue_type
-    - custom_fields.request_type
-    - custom_fields.contract_type
-    - assignee
-    - sla_status
+card_template:
+  size: compact
+  fields:
+    primary:
+      - title
+      - assignee
+    secondary:
+      - issue_type
+      - custom_fields.request_type
+      - custom_fields.contract_type
+      - sla_status
+  badges:
+    - type: comments_count
 
-  quick_filters:
-    - field: issue_type
-      label: GDPR
-      value: gdpr_request
-    - field: issue_type
-      label: Contracts
-      value: contract
-    - field: sla_status
-      label: SLA At Risk
-      values: [warning, breached]
+quick_filters:
+  - field: issue_type
+    label: GDPR
+    value: gdpr_request
+  - field: issue_type
+    label: Contracts
+    value: contract
+  - field: sla_status
+    label: SLA At Risk
+    values: [warning, breached]
