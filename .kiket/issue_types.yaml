@@ -1,58 +1,24 @@
 model_version: "1.0"
 
 issue_types:
-  gdpr_request:
-    name: GDPR Request
-    description: Data subject request (access, deletion, portability)
-    icon: "🔒"
-    color: "#6366F1"
-    workflow: gdpr
-    fields:
-      - key: request_type
-        type: enum
-        label: Request Type
-        options: [access, rectification, erasure, portability, restriction, objection]
-        required: true
-      - key: requester_email
-        type: email
-        label: Requester Email
-        required: true
-      - key: requester_name
-        type: string
-        label: Requester Name
-      - key: verification_status
-        type: enum
-        label: Verification Status
-        options: [pending, verified, rejected]
-      - key: deadline
-        type: date
-        label: Response Deadline
-
-  contract:
-    name: Contract
-    description: Contract for review or execution
-    icon: "📄"
-    color: "#14B8A6"
-    workflow: contract
-    fields:
-      - key: contract_type
-        type: enum
-        label: Contract Type
-        options: [customer, vendor, partner, employment, nda, dpa]
-      - key: counterparty
-        type: string
-        label: Counterparty
-        required: true
-      - key: value
-        type: number
-        label: Contract Value ($)
-      - key: start_date
-        type: date
-        label: Start Date
-      - key: end_date
-        type: date
-        label: End Date
-      - key: renewal_type
-        type: enum
-        label: Renewal Type
-        options: [auto_renew, manual, one_time]
+  - key: gdpr_request
+    label: GDPR Request
+    allow_children: false
+    color: primary
+    icon: lock
+    position: 0
+    active: true
+  - key: contract
+    label: Contract
+    allow_children: true
+    color: success
+    icon: file-text
+    position: 1
+    active: true
+  - key: compliance_task
+    label: Compliance Task
+    allow_children: false
+    color: warning
+    icon: shield-check
+    position: 2
+    active: true
