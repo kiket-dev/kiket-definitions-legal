@@ -5,6 +5,15 @@ project:
   version: 1.0.0
   description: GDPR compliance, contract management, and legal workflows.
 
+  team:
+    roles:
+      - name: paralegal
+        description: Paralegal supporting document preparation and research
+      - name: attorney
+        description: Attorney reviewing contracts and providing legal counsel
+      - name: compliance_officer
+        description: Compliance officer ensuring regulatory adherence
+
   extensions:
     required:
       - email
