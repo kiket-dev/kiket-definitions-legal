@@ -5,20 +5,22 @@ issue_types:
     label: GDPR Request
     allow_children: false
     color: primary
-    icon: lock
+    icon: target
     position: 0
     active: true
+    workflow: gdpr
   - key: contract
     label: Contract
     allow_children: true
     color: success
-    icon: file-text
+    icon: layers
     position: 1
     active: true
+    workflow: contract
   - key: compliance_task
     label: Compliance Task
     allow_children: false
     color: warning
-    icon: shield-check
+    icon: check-square
     position: 2
     active: true
