@@ -1,72 +1,55 @@
 model_version: "1.0"
-id: ai.legal.gdpr_classifier
-version: 1.0.0
-name: GDPR Request Classifier
-description: Classify GDPR data subject requests by type.
+agent:
+  id: ai.legal.gdpr_classifier
+  version: 1.0.0
+  name: GDPR Request Classifier
+  description: Classify GDPR data subject requests by type.
 
-prompt: |
-  Classify this GDPR data subject request.
+  prompts:
+    - role: system
+      content: |
+        Classify this GDPR data subject request.
 
-  **Request:**
-  - Subject: {{issue.title}}
-  - Email: {{issue.custom_fields.email}}
-  - Request Text: {{issue.description}}
+        **Request:**
+        - Subject: {{issue.title}}
+        - Email: {{issue.custom_fields.email}}
+        - Request Text: {{issue.description}}
 
-  **GDPR Request Types:**
-  - access: Right to access personal data (Art. 15)
-  - rectification: Right to correct inaccurate data (Art. 16)
-  - erasure: Right to be forgotten (Art. 17)
-  - restriction: Right to restrict processing (Art. 18)
-  - portability: Right to data portability (Art. 20)
-  - objection: Right to object to processing (Art. 21)
-  - automated: Rights related to automated decision-making (Art. 22)
+        **GDPR Request Types:**
+        - access: Right to access personal data (Art. 15)
+        - rectification: Right to correct inaccurate data (Art. 16)
+        - erasure: Right to be forgotten (Art. 17)
+        - restriction: Right to restrict processing (Art. 18)
+        - portability: Right to data portability (Art. 20)
+        - objection: Right to object to processing (Art. 21)
+        - automated: Rights related to automated decision-making (Art. 22)
 
-  Classify the request:
-  - request_type: Primary request type
-  - secondary_types: Any additional request types mentioned
-  - urgency: normal/high (high if mentions legal action, regulatory complaint)
-  - data_categories: Types of data likely involved
-  - systems_involved: Systems that likely contain the data
-  - complexity: simple/moderate/complex
-  - notes: Key points for the processing team
+        Classify the request:
+        - request_type: Primary request type
+        - secondary_types: Any additional request types mentioned
+        - urgency: normal/high (high if mentions legal action, regulatory complaint)
+        - data_categories: Types of data likely involved
+        - systems_involved: Systems that likely contain the data
+        - complexity: simple/moderate/complex
+        - notes: Key points for the processing team
 
-capabilities:
-  - request_classification
-  - gdpr_compliance
+  capabilities:
+    - request_classification
+    - gdpr_compliance
 
-context:
-  required:
-    - documents
+  inputs:
+    - name: issue
+      type: object
+      description: The GDPR request
 
-human_in_loop:
-  required: false
+  outputs:
+    - name: request_type
+      type: string
+    - name: secondary_types
+      type: array
+    - name: urgency
+      type: string
+    - name: complexity
+      type: string
 
-metadata:
-  output_format: json
-  max_tokens: 600
-  schema:
-    type: object
-    properties:
-      request_type:
-        type: string
-        enum: [access, rectification, erasure, restriction, portability, objection, automated]
-      secondary_types:
-        type: array
-        items:
-          type: string
-      urgency:
-        type: string
-        enum: [normal, high]
-      data_categories:
-        type: array
-        items:
-          type: string
-      systems_involved:
-        type: array
-        items:
-          type: string
-      complexity:
-        type: string
-        enum: [simple, moderate, complex]
-      notes:
-        type: string
+  tools: []

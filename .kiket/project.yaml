@@ -1,6 +1,6 @@
 model_version: "1.0"
 project:
-  id: legal
+  key: LEGAL
   name: Legal & Compliance
   version: 1.0.0
   description: GDPR compliance, contract management, and legal workflows.

@@ -1,5 +1,5 @@
 model_version: "1.0"
-intake:
+intake_form:
   id: gdpr-request
   name: Data Subject Request
   description: Submit a GDPR data subject request.

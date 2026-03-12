@@ -1,5 +1,5 @@
 model_version: "1.0"
-intake:
+intake_form:
   id: contract-request
   name: Contract Request
   description: Request a new contract or contract amendment.
