@@ -20,3 +20,59 @@ project:
     optional:
       - slack
       - docusign
+
+  seed_data:
+    issues:
+      - title: Enterprise SaaS agreement with Meridian Financial
+        description: New 3-year enterprise contract with custom SLA terms and dedicated support. Annual value $120,000.
+        issue_type: contract
+        status: legal_review
+        priority: high
+        labels:
+          - enterprise
+          - new-business
+
+      - title: GDPR data deletion request from former employee
+        description: Former employee requesting full deletion of personal data under Article 17 right to erasure.
+        issue_type: gdpr_request
+        status: processing
+        priority: high
+        labels:
+          - deletion
+          - employee-data
+
+      - title: Update DPA template for new sub-processor addition
+        description: Adding Cloudflare R2 as a sub-processor requires updating the Data Processing Agreement template and notifying affected customers.
+        issue_type: compliance_task
+        status: draft
+        priority: medium
+        labels:
+          - dpa
+          - sub-processor
+
+      - title: NDA renewal with TechBridge Consulting
+        description: Mutual NDA expiring next month. TechBridge has requested updated liability cap language in the renewal.
+        issue_type: contract
+        status: pending_signature
+        priority: medium
+        labels:
+          - nda
+          - renewal
+
+      - title: GDPR data portability request - export user account data
+        description: Customer requesting a machine-readable export of all personal data held in their account under Article 20.
+        issue_type: gdpr_request
+        status: verifying_identity
+        priority: medium
+        labels:
+          - portability
+          - customer-data
+
+      - title: Review updated AWS data processing terms
+        description: AWS published new standard contractual clauses. Review for compliance with our existing DPA obligations.
+        issue_type: compliance_task
+        status: draft
+        priority: low
+        labels:
+          - vendor
+          - scc-review
