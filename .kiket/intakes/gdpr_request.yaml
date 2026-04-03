@@ -6,7 +6,7 @@ intake_form:
   version: 1.0.0
 
   public: true
-  slug: privacy/request
+  slug: gdpr-request
 
   branding:
     title: "Data Subject Request"

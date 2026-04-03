@@ -6,7 +6,7 @@ intake_form:
   version: 1.0.0
 
   public: false
-  slug: legal/contract
+  slug: legal-contract
 
   branding:
     title: "Contract Request"
