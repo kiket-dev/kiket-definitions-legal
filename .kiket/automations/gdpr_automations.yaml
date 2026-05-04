@@ -7,9 +7,9 @@ automations:
     enabled: true
 
     trigger:
-      event: issue.created
+      event: case.created
       conditions:
-        - field: issue_type
+        - field: case_type
           equals: gdpr_request
 
     actions:
@@ -33,7 +33,7 @@ automations:
     trigger:
       event: sla.warning
       conditions:
-        - field: issue_type
+        - field: case_type
           equals: gdpr_request
 
     actions:
@@ -53,7 +53,7 @@ automations:
     trigger:
       event: sla.breached
       conditions:
-        - field: issue_type
+        - field: case_type
           equals: gdpr_request
 
     actions:
@@ -72,9 +72,9 @@ automations:
     enabled: true
 
     trigger:
-      event: issue.transitioned
+      event: case.transitioned
       conditions:
-        - field: issue_type
+        - field: case_type
           equals: gdpr_request
         - field: to_status
           equals: completed

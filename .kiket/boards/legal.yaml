@@ -7,7 +7,7 @@ board:
   workflow: gdpr
 
 filters:
-  issue_types:
+  case_types:
     - gdpr_request
     - contract
   workflows:
@@ -54,7 +54,7 @@ columns:
 
 swimlanes:
   enabled: true
-  field: issue_type
+  field: case_type
   values:
     - value: gdpr_request
       label: "🔐 GDPR Requests"
@@ -68,7 +68,7 @@ card_template:
       - title
       - assignee
     secondary:
-      - issue_type
+      - case_type
       - custom_fields.request_type
       - custom_fields.contract_type
       - sla_status
@@ -76,10 +76,10 @@ card_template:
     - type: comments_count
 
 quick_filters:
-  - field: issue_type
+  - field: case_type
     label: GDPR
     value: gdpr_request
-  - field: issue_type
+  - field: case_type
     label: Contracts
     value: contract
   - field: sla_status
