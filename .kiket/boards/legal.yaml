@@ -57,9 +57,9 @@ swimlanes:
   field: case_type
   values:
     - value: gdpr_request
-      label: "🔐 GDPR Requests"
+      label: GDPR requests
     - value: contract
-      label: "📋 Contracts"
+      label: Contracts
 
 card_template:
   size: compact

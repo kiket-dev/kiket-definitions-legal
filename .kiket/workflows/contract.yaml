@@ -69,12 +69,12 @@ states:
           recipients:
             user: assignee
             roles: [legal]
-          message: "⚠️ Contract {{issue.title}} approaching SLA in Legal Review"
+          message: "⚠️ Contract {{case.title}} approaching SLA in Legal Review"
       on_breach:
         - action: notify
           recipients:
             roles: [legal, manager]
-          message: "🚨 SLA BREACH: Contract {{issue.title}} exceeded 120h in Legal Review"
+          message: "🚨 SLA BREACH: Contract {{case.title}} exceeded 120h in Legal Review"
           level: critical
 
   pending_signature:
@@ -89,7 +89,7 @@ states:
       - action: notify
         recipients:
           user: assignee
-        message: "📋 Contract ready for signature: {{issue.title}}"
+        message: "📋 Contract ready for signature: {{case.title}}"
 
   countersigned:
     type: active
@@ -115,13 +115,13 @@ states:
       - action: notify
         recipients:
           roles: [legal, sales]
-        message: "✅ Contract executed: {{issue.title}}"
+        message: "✅ Contract executed: {{case.title}}"
         level: success
       - action: blockchain_anchor
         priority: normal
         metadata:
           type: contract_execution
-          contract_id: "{{issue.custom_fields.contract_id}}"
+          contract_id: "{{case.custom_fields.contract_id}}"
 
   expired:
     type: final
@@ -145,7 +145,7 @@ states:
         priority: high
         metadata:
           type: contract_termination
-          contract_id: "{{issue.custom_fields.contract_id}}"
+          contract_id: "{{case.custom_fields.contract_id}}"
 
   cancelled:
     type: final

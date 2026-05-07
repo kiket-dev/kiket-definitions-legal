@@ -11,12 +11,12 @@ agent:
         Analyze this contract draft for key terms and potential risks.
 
         **Contract:**
-        - Title: {{issue.title}}
-        - Type: {{issue.custom_fields.contract_type}}
-        - Counterparty: {{issue.custom_fields.counterparty}}
-        - Value: ${{issue.custom_fields.contract_value}}
-        - Term: {{issue.custom_fields.term_months}} months
-        - Content: {{issue.description}}
+        - Title: {{case.title}}
+        - Type: {{case.custom_fields.contract_type}}
+        - Counterparty: {{case.custom_fields.counterparty}}
+        - Value: ${{case.custom_fields.contract_value}}
+        - Term: {{case.custom_fields.term_months}} months
+        - Content: {{case.description}}
 
         **Standard Terms (for comparison):**
         {{context.standard_terms}}

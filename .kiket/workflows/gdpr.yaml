@@ -113,12 +113,12 @@ states:
       - action: notify
         recipients:
           user: submitter
-        message: "Your GDPR request has been completed. Reference: #{{issue.id}}"
+        message: "Your GDPR request has been completed. Reference: #{{case.id}}"
       - action: blockchain_anchor
         priority: high
         metadata:
           type: gdpr_compliance
-          request_type: "{{issue.custom_fields.request_type}}"
+          request_type: "{{case.custom_fields.request_type}}"
 
   rejected:
     type: final
@@ -132,7 +132,7 @@ states:
       - action: notify
         recipients:
           user: submitter
-        message: "Your request could not be processed. Reason: {{issue.custom_fields.rejection_reason}}"
+        message: "Your request could not be processed. Reason: {{case.custom_fields.rejection_reason}}"
 
 transitions:
   - from: received

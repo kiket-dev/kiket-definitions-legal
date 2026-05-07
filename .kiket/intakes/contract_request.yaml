@@ -123,7 +123,7 @@ intake_form:
     message: |
       Your contract request has been submitted to the legal team.
 
-      **Request ID:** #{{issue.id}}
+      **Request ID:** #{{case.id}}
       **Contract Type:** {{contract_type}}
       **Counterparty:** {{counterparty}}
 

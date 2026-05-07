@@ -22,7 +22,7 @@ automations:
       - type: notify
         recipients:
           roles: [legal]
-        message: "🔐 New GDPR request: {{issue.custom_fields.request_type}} from {{issue.custom_fields.email}}"
+        message: "🔐 New GDPR request: {{case.custom_fields.request_type}} from {{case.custom_fields.email}}"
 
   - id: gdpr-sla-warning
     name: GDPR SLA Warning
@@ -41,7 +41,7 @@ automations:
         recipients:
           user: assignee
           roles: [legal, compliance]
-        message: "⚠️ GDPR deadline approaching: Request #{{issue.id}} ({{sla.time_remaining}} remaining)"
+        message: "⚠️ GDPR deadline approaching: Request #{{case.id}} ({{sla.time_remaining}} remaining)"
         level: warning
 
   - id: gdpr-sla-breach
@@ -60,7 +60,7 @@ automations:
       - type: notify
         recipients:
           roles: [legal, compliance, executive]
-        message: "🚨 GDPR DEADLINE BREACHED: Request #{{issue.id}} - Regulatory risk!"
+        message: "🚨 GDPR DEADLINE BREACHED: Request #{{case.id}} - Regulatory risk!"
         level: critical
       - type: add_label
         label: compliance-risk
@@ -84,8 +84,8 @@ automations:
         priority: high
         metadata:
           type: gdpr_compliance
-          request_id: "{{issue.id}}"
-          request_type: "{{issue.custom_fields.request_type}}"
+          request_id: "{{case.id}}"
+          request_type: "{{case.custom_fields.request_type}}"
           completed_at: "{{now}}"
       - type: comment
         body: "✅ GDPR request completed and anchored to blockchain for compliance audit trail."

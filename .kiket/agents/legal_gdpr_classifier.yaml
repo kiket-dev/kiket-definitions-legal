@@ -11,9 +11,9 @@ agent:
         Classify this GDPR data subject request.
 
         **Request:**
-        - Subject: {{issue.title}}
-        - Email: {{issue.custom_fields.email}}
-        - Request Text: {{issue.description}}
+        - Subject: {{case.title}}
+        - Email: {{case.custom_fields.email}}
+        - Request Text: {{case.description}}
 
         **GDPR Request Types:**
         - access: Right to access personal data (Art. 15)

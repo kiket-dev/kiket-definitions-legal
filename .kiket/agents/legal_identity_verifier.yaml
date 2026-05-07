@@ -11,9 +11,9 @@ agent:
         Assess identity verification requirements for this GDPR request.
 
         **Request:**
-        - Requester Email: {{issue.custom_fields.email}}
-        - Name Provided: {{issue.custom_fields.name}}
-        - Request Type: {{issue.custom_fields.request_type}}
+        - Requester Email: {{case.custom_fields.email}}
+        - Name Provided: {{case.custom_fields.name}}
+        - Request Type: {{case.custom_fields.request_type}}
 
         **Account Information (if found):**
         {{#if context.account}}

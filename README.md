@@ -10,14 +10,14 @@ This definition provides legal operations workflows including:
 - **AI Agents**: GDPR classification, identity verification, contract analysis
 - **Intake Forms**: Public GDPR request, internal contract request
 - **Board**: Legal requests board
-- **Analytics**: Contract turnaround, GDPR SLA compliance, renewal pipeline, risk scoring
+- **Dashboards**: Contract turnaround, GDPR SLA compliance, renewal pipeline, risk scoring
 - **Automations**: GDPR classification, SLA alerts, compliance audit trails
 
 ## Structure
 
 ```
 .kiket/
-├── project.yaml           # Definition metadata
+├── workspace.yaml           # Definition metadata
 ├── case_types.yaml       # GDPR request and contract case types
 ├── workflows/
 │   ├── gdpr.yaml          # GDPR request workflow
@@ -31,9 +31,8 @@ This definition provides legal operations workflows including:
 │   └── contract_request.yaml
 ├── boards/
 │   └── legal.yaml
-├── analytics/
-│   └── dashboards/
-│       └── legal_health.yaml
+├── dashboards/
+│   └── legal_health.yaml
 └── automations/
     └── gdpr_automations.yaml
 ```

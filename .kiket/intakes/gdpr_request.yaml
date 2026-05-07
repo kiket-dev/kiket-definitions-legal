@@ -85,7 +85,7 @@ intake_form:
     message: |
       Your data subject request has been received.
 
-      **Reference Number:** #{{issue.id}}
+      **Reference Number:** #{{case.id}}
       **Request Type:** {{request_type}}
 
       We will process your request in accordance with GDPR requirements (within 30 days).
@@ -97,7 +97,7 @@ intake_form:
     on_submit:
       - type: email
         to: "{{email}}"
-        subject: "Data Subject Request Received - Reference #{{issue.id}}"
+        subject: "Data Subject Request Received - Reference #{{case.id}}"
         template: gdpr_request_confirmation
       - type: slack
         channel: "#legal-privacy"
